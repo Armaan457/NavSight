@@ -16,10 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from user.views import yolo, blip
+from user.views import yolo, blip, voice_control
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('yolo/',yolo,name='yolo'),
     path('blip/',blip,name='blip'),
+    path('',voice_control,name='voice_control'),
 ]

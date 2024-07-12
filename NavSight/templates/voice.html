@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NavSight Home</title>
+</head>
+<body>
+    <h1>Voice Command Interface</h1>
+    <p>Welcome to NavSight!</p>
+    <button id="startButton">Let's Begin</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('startButton').addEventListener('click', () => {
+                speak("Welcome to NavSight, your AI powered navigation tool. We hope we are of help to you!"); // Speak initial phrase
+                setTimeout(() => {
+                    startRecording();
+                }, 7000); 
+            });
+        });
+
+        let recognition;
+        let isRestarting = false; 
+
+        function startRecording() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Your browser does not support Speech Recognition. Please use Google Chrome.");
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+
+            recognition.onaudiostart = function() {
+                console.log('Audio capturing started');
+            };
+
+            recognition.onaudioend = function() {
+                console.log('Audio capturing ended');
+            };
+
+            recognition.onresult = function(event) {
+                const command = event.results[0][0].transcript;
+                console.log('Voice command received:', command);
+                sendCommand(command);
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Recognition error:', event.error);
+                alert('Error occurred in recognition: ' + event.error);
+
+                if (event.error === 'not-allowed') {
+                    alert('Microphone access not allowed.');
+                    return;
+                }
+
+                if (event.error === 'network') {
+                    alert('Network error occurred. Please check your internet connection.');
+                    return;
+                }
+
+                // Only restart recognition if error is 'aborted'
+                if (event.error === 'aborted' && !isRestarting) {
+                    isRestarting = true;
+                    setTimeout(() => {
+                        recognition.start();
+                        isRestarting = false;
+                    }, 1000);
+                }
+            };
+
+            recognition.onend = function() {
+                console.log('Recognition ended.');
+                if (!isRestarting) {
+                    isRestarting = true;
+                    setTimeout(() => {
+                        startRecording();
+                        isRestarting = false;
+                    }, 1000);
+                }
+            };
+
+            recognition.start();
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.onend = function() {
+                    console.log('Speech synthesis finished.');
+                };
+                utterance.onerror = function(event) {
+                    console.error('Speech synthesis error:', event.error);
+                };
+                window.speechSynthesis.speak(utterance);
+                console.log('Speaking:', text);
+            } else {
+                console.warn('Speech synthesis not supported in this browser.');
+            }
+        }
+
+        function sendCommand(command) {
+            fetch('/voice_control/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ command: command })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    alert('Command not recognized or an error occurred');
+                }
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

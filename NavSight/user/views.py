@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
 import base64
@@ -75,3 +75,23 @@ def blip(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return render(request, 'blip.html')
+
+
+COMMAND_TO_URL = {
+    "object detection mode" : "http://127.0.0.1:8000/yolo",
+    "describe my surroundings" : "http://127.0.0.1:8000/blip/"
+}
+
+@csrf_exempt
+def voice_control(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        command = data.get('command').lower()
+
+        url = COMMAND_TO_URL.get(command)
+
+        if url:
+            return JsonResponse({'url': url})
+        else:
+            return HttpResponseBadRequest('Command not recognized')
+    return render(request, "voice.html")
