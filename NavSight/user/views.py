@@ -78,7 +78,7 @@ def blip(request):
 
 
 COMMAND_TO_URL = {
-    "object detection mode" : "http://127.0.0.1:8000/yolo",
+    "object detection mode" : "http://127.0.0.1:8000/yolo/",
     "describe my surroundings" : "http://127.0.0.1:8000/blip/"
 }
 
@@ -89,7 +89,8 @@ def voice_control(request):
         command = data.get('command').lower()
 
         url = COMMAND_TO_URL.get(command)
-
+        print(url)
+        
         if url:
             return JsonResponse({'url': url})
         else:
