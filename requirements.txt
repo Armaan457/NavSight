@@ -1,9 +1,7 @@
 django
-cv2
+opencv-python
 ultralytics
 transformers
 numpy
-PIL
-json
-io
-base64
+torch
+torchvision

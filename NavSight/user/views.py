@@ -9,10 +9,13 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 from transformers import BlipProcessor, BlipForConditionalGeneration
+import torch
 
 # Create your views here.
 
 model_yolo = YOLO("yolov9s.pt")
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model_yolo.to(device)
 
 classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
               "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
@@ -38,7 +41,7 @@ def yolo(request):
             image = Image.open(BytesIO(image_data)).convert('RGB')
             open_cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
-            results = model_yolo(open_cv_image, stream=True, conf = 0.7)
+            results = model_yolo(open_cv_image, stream=True, conf = 0.8)
             new_objects = set()
             for r in results:
                 for box in r.boxes:
@@ -54,6 +57,9 @@ def yolo(request):
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+torch.cuda.empty_cache()
+model.to(device)
 
 @csrf_exempt
 def blip(request):
@@ -68,9 +74,12 @@ def blip(request):
             image = Image.open(BytesIO(image_data))
 
             inputs = processor(images=image, return_tensors="pt")
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+
             out = model.generate(**inputs)
             caption = processor.decode(out[0], skip_special_tokens=True)
-
+            print(caption)
+            
             return JsonResponse({'caption': caption})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
