@@ -13,14 +13,15 @@ Clone the repository:
 
 ```sh
 > git clone https://github.com/Armaan457/NavSight.git
-> cd NavSight
 ```
+
 Create and activate a virtual environment:
 
 ```sh
 > python -m venv venv
 > venv\Scripts\activate
   ```
+
 Install dependencies:
 
 ```sh
@@ -30,6 +31,7 @@ Install dependencies:
 Run the development server:
 
 ```sh
+> cd NavSight
 > python manage.py runserver
 ```
 
