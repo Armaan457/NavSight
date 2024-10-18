@@ -8,8 +8,6 @@ from django.contrib.auth.models import User , auth
 from django.contrib import messages
 from .models import UniqueID
 
-def members(request):
-  return render(request , "index1.html" )
 
 def home(request):
   return render(request , "welcome_page.html")
@@ -68,15 +66,7 @@ def signup(request):
             return redirect('signup')
     else:
         return render(request, 'signup.html')
-
-         
-def number(request):
-  total = request.POST['name']
-  totalw = len(total.split())
-  context ={
-    "total":totalw
-  }
-  return render(request , "number.html" ,context)
+        
 
 import json
 import requests

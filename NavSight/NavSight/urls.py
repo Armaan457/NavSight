@@ -17,16 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from user.views import yolo, blip, voice_control
-from helper.views import members, number, home, id, log_signup, login, signup, uniqueid1, uniqueid2, navigatorhome, location
+from helper.views import home, id, log_signup, login, signup, uniqueid1, uniqueid2, navigatorhome, location
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('yolo/',yolo,name='yolo'),
     path('blip/',blip,name='blip'),
     path('voice_control/',voice_control,name='voice_control'),
-    path('', members, name='members'),
-    path("words" , number, name="number"),
-    path('home/',home,name="home"),
+    path('',home,name="home"),
     path('unique_id' , id,name="id"),
     path('log_signup/', log_signup, name='log_signup'),
     path('login', login, name="login"),
