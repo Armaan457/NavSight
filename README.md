@@ -1,5 +1,10 @@
 # NavSight
-People who are unable to see, face unique challenges in communicating and navigating their surroundings. To help in this issue, we are making a tool for the visually impaired people. It will help them to know about their surroundings and the objects near them. For a comfortable user experience the app is voice controlled for the user side while the helper side has full access to the the assigned person's location and emergency status and can call for help when neccessary .
+People who are unable to see, face unique challenges in communicating and navigating their surroundings. To help in this issue, we are making a tool for the visually impaired people. 
+
+**Project features:**
+- Nearby objects detection
+- Image captioning for describing surroudings
+- Voice control and voice output 
 
 # Technologies used
 **Frontend**: HTML, CSS, Javascript <br>
